@@ -37,24 +37,29 @@ describe('url builder functions', () => {
 								sep: ';',
 								value: ['first', 'second', 'third']
 							}
-						});
-
-		expect(builder.toString()).toBe(`${url}?q=first;second;third`);
-	});
-
-	it('should build more complex query', () => {
-		const url = 'https://github.com';
-		const builder = Builder(url)
-						.setQueryParam({
-							family: {
-								sep: ';',
-								value: 'Roboto:ital'
-							}
 						})
-						.appendQueryParam('family', '0,100')
+						.appendQueryParam('q', 'fourth')
+
+		expect(builder.toString()).toBe(`${url}?q=first;second;third;fourth`);
 	});
 
-	// https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;1,100;1,300&display=swap
+	// TODO: consider or delete
+	// it('should build more complex query', () => {
+	// 	const url = 'https://github.com';
+	// 	const builder = Builder(url)
+	// 					.setQueryParam({
+	// 						family: {
+	// 							sep: ';',
+	// 							value: 'Roboto:ital,wght'
+	// 						}
+	// 					})
+	// 					.appendQueryParam('family', '@0,100')
+	// 					.appendQueryParam('family', '0,300')
+
+
+	// 	expect(builder.toString()).toBe(`${url}?family=Roboto:ital,wght@0,100,0,300`);
+	// });
+
 	it('should parse schemes from full string', () => {
 		const schemes = ['https', 'ws', 'chrome'];
 		const urls = schemes.map(scheme => `${scheme}://github.com/ikeohachidi/url-builder`);
