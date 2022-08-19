@@ -1,13 +1,13 @@
-type Primitive = number | string | boolean | null | undefined;
+export type Primitive = number | string | boolean | null | undefined;
 
-type Either<A, B> = A | B;
+export type Either<A, B> = A | B;
 
-type SetQueryParamOptions = {
+export type SetQueryParamOptions = {
 	sep: string,
 	value: Primitive 
 }
 
-type ObjectWithPrimitiveValue = {[key: string]: Primitive}
+export type ObjectWithPrimitiveValue = {[key: string]: Primitive}
 
 enum Scheme {
 	HTTP = 'http',
@@ -15,9 +15,11 @@ enum Scheme {
 }
 
 export interface Builder {
-	addParam: (param: string) => Builder;
+	// addParam: (param: string) => Builder;
 	
 	setParams: (paramObj: {[key: string]: Primitive}) => Builder;
+
+	setParam: (param: string | number, value: Primitive) => Builder;
 
 	getParams: (param?: string) => Either<
 		Primitive, 
@@ -25,6 +27,8 @@ export interface Builder {
 	>;
 
 	setQueryParam: (params: {[key: string]: SetQueryParamOptions}) => Builder;
+
+	addQueryParam: (param: string | number, value: Primitive) => Builder;
 
 	getQueryParams: (param?: string) => Either<
 		Primitive,
