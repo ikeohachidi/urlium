@@ -98,7 +98,7 @@ describe('url builder functions', () => {
 	});
 });
 
-describe('standard url builder behaviour', () => {
+describe.only('standard url builder behaviour', () => {
 	it('should produce proper url parts after setting', () => {
 		const url = 'https://github.com/ikeohachidi/url-builder';
 		const builder = Builder(url)
