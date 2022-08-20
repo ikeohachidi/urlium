@@ -1,4 +1,5 @@
 export type Primitive = number | string | boolean | null | undefined;
+export type StrOrInt = number | string;
 
 export type Either<A, B> = A | B;
 
@@ -8,8 +9,8 @@ export type SetQueryParamOptions = {
 }
 
 export type ObjectWithPrimitiveValue = {[key: string]: Primitive}
-
-enum Scheme {
+ 
+export enum Scheme {
 	HTTP = 'http',
 	HTTPS = 'https',
 }
@@ -22,13 +23,16 @@ export interface Builder {
 	setParam: (param: string | number, value: Primitive) => Builder;
 
 	getParams: (param?: string) => Either<
-		Primitive, 
+		Primitive,
 		ObjectWithPrimitiveValue
 	>;
 
-	setQueryParam: (params: {[key: string]: SetQueryParamOptions}) => Builder;
+	setQueryParam: (
+		params: {[key: string]: SetQueryParamOptions} | StrOrInt,
+		value?: Primitive | object
+	) => Builder;
 
-	addQueryParam: (param: string | number, value: Primitive) => Builder;
+	// addQueryParam: (param: string | number, value: Primitive) => Builder;
 
 	getQueryParams: (param?: string) => Either<
 		Primitive,
@@ -49,4 +53,11 @@ export interface Builder {
 	getScheme: () => void;
 
 	toString: () => string; 
+}
+
+export type URLObject = {
+	scheme: string;
+	hostname: string;
+	params:	{[param: string]: number};
+	queries: {[queryKey: string]: Primitive};
 }

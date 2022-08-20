@@ -21,7 +21,7 @@ describe('url builder functions', () => {
 
 		// when not using placeholders, 0 index 'em
 		const builder2 = Builder(finalString);
-		expect(builder2.getParams).toMatch({
+		expect(builder2.getParams()).toMatch({
 			0: user,
 			1: repo
 		})
@@ -35,7 +35,7 @@ describe('url builder functions', () => {
 						.setQueryParam({
 							q: {
 								sep: ';',
-								value: ['first', 'second', 'third']
+								value: ['first', 'second', 'third'],
 							}
 						})
 						.appendQueryParam('q', 'fourth')
@@ -124,7 +124,6 @@ describe.only('standard url builder behaviour', () => {
 							repo: 'url-builder',
 							tab: 'settings'
 						})
-						.addQueryParam('sort', 'asc')
 						.addQueries({
 							'page': 1,
 							'limit': 50
