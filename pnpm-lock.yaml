@@ -1,11 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@types/jest': ^28.1.7
   jest: ^28.1.3
   typescript: ^4.6.4
   vite: ^3.0.7
 
 devDependencies:
+  '@types/jest': 28.1.7
   jest: 28.1.3
   typescript: 4.7.4
   vite: 3.0.8
@@ -683,6 +685,13 @@ packages:
     resolution: {integrity: sha512-c3mAZEuK0lvBp8tmuL74XRKn1+y2dcwOUpH7x4WrF6gk1GIgiluDRgMYQtw2OFcBvAJWlt6ASU3tSqxp0Uu0Aw==}
     dependencies:
       '@types/istanbul-lib-report': 3.0.0
+    dev: true
+
+  /@types/jest/28.1.7:
+    resolution: {integrity: sha512-acDN4VHD40V24tgu0iC44jchXavRNVFXQ/E6Z5XNsswgoSO/4NgsXoEYmPUGookKldlZQyIpmrEXsHI9cA3ZTA==}
+    dependencies:
+      expect: 28.1.3
+      pretty-format: 28.1.3
     dev: true
 
   /@types/node/18.7.6:
