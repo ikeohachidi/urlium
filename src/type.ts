@@ -5,7 +5,7 @@ export type Either<A, B> = A | B;
 
 export type SetQueryParamOptions = {
 	sep: string,
-	value: Primitive 
+	value: Primitive | Array<Primitive>
 }
 
 export type ObjectWithPrimitiveValue = {[key: string]: Primitive}
@@ -27,24 +27,24 @@ export interface Builder {
 		ObjectWithPrimitiveValue
 	>;
 
-	setQueryParam: (
-		params: {[key: string]: SetQueryParamOptions} | StrOrInt,
+	setQuery: (
+		param: {[key: string]: SetQueryParamOptions} | StrOrInt,
 		value?: Primitive | object
 	) => Builder;
 
 	// addQueryParam: (param: string | number, value: Primitive) => Builder;
 
-	getQueryParams: (param?: string) => Either<
+	getQuery: (param?: string) => Either<
 		Primitive,
 		ObjectWithPrimitiveValue
 	>;
 
-	getRawQueryParams: (param?: string) => Either<
+	getRawQuery: (param?: string) => Either<
 		Primitive,
 		ObjectWithPrimitiveValue
 	>;
 
-	setHostName: () => Builder;
+	setHostName: (hostname: string) => Builder;
 
 	getHostName: () => string;
 
