@@ -116,21 +116,36 @@ describe.only('standard url builder behaviour', () => {
 		});
 	});
 
-	it('should produce correct url string', () => {
-		const url = 'https://github.com/{user}/{repo}/{tab}';
-		const builder = Builder(url)
-						.setParam('user', 'ikeohachidi')
-						.setParams({
-							repo: 'url-builder',
-							tab: 'settings'
-						})
-						.addQueries({
-							'page': 1,
-							'limit': 50
-						});
+	it('should interpolate param properly', () => {
+		const urls = [
+			{
+				url: 'https://github.com/{user}/{repo}',
+				params: {
+					user: 'ikeohachidi',
+					repo: 'url-builder'
+				},
+				queries: {
+					page: 1,
+					limit: 40
+				},
+				result: 'https://github.com/ikeohachidi/url-builder?page=1&limit=40'
+			},
+			{
+				url: 'https://github.com/ikeohachidi/{repo}',
+				params: {
+					repo: 'url-builder'
+				},
+				result: `https://github.com/ikeohachidi/url-builder`
+			}
+		];
 
-		const urlString = builder.toString();
-		expect(urlString).toBe();
-	});
+		for (const obj of urls) {
+			const builder = Builder(obj.url)
+							.setParams(obj.params)
+							.setQuery(obj.queries)
+
+			expect(builder.toString()).toBe(obj.result);
+		}
+	})
 
 });
