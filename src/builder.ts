@@ -155,28 +155,54 @@ export const Builder = (url: string): BType => {
 
 			return this;
 		},
-		getQueryParams(param) {
-			console.log(param);
-			return {} as ObjectWithPrimitiveValue;
+		getQuery(param) {
+			if (param) return urlObj.queries[param];	
+
+			const params: {[query: string]: string} = {};
+			for (const [key, value] of Object.entries(urlObj.params)) {
+				params[key] = decodeURI(String(value));
+			}
+
+			return params;
 		},
-		getRawQueryParams(param) {
-			console.log(param);
-			return {} as ObjectWithPrimitiveValue;
+		getRawQuery(param) {
+			if (param) return urlObj.queries[param];
+
+			return urlObj.queries;
 		},
-		setHostName() {
+		setHostName(hostname: string) {
+			urlObj.hostname = hostname;
 			return this;
 		},
 		getHostName() {
 			return _nativeURL.host;
 		},
-		setScheme() {
+		setScheme(scheme) {
+			urlObj.scheme = scheme;
 			return this;
 		},
 		getScheme() {
 			return _nativeURL.protocol;
 		},
 		toString() {
-			return _url; 
+			let u = _url;
+			const { scheme, hostname, params, queries } = urlObj;
+			let str = `${scheme}://${hostname}`;
+
+			// add params to string
+			for (const [key, value] of Object.entries(params)) {
+				if (typeof key === 'string') {
+					str = u.replace(`{${key}}`, String(value));
+				}
+			}
+
+			// add query to string
+			str += "?";
+			for (const [key, value] of Object.entries(queries)) {
+				str += `${key}=${value}`;
+			}
+
+			return str; 
 		}
 	}
 }
