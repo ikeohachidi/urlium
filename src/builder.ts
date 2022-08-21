@@ -1,6 +1,5 @@
 import type { 
-	Builder, 
-	ObjectWithPrimitiveValue,
+	Builder as BType, 
     Primitive,
     SetQueryParamOptions,
     StrOrInt,
@@ -12,7 +11,7 @@ const primitives = ['string', 'number', 'boolean'];
 
 // TODO: probably remove Partial just here to ease 
 // development experience
-const Builder = (url: string): Builder => {
+export const Builder = (url: string): BType => {
 	let _url = '';
 
 	const schemeSlice = url.slice(0, 9);
