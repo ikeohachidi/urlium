@@ -1,4 +1,5 @@
-import { Builder } from 'url-builder';
+import { Builder } from './builder';
+import { Scheme } from './type';
 
 
 describe('url builder functions', () => {
@@ -14,14 +15,14 @@ describe('url builder functions', () => {
 						});
 
 		expect(builder.toString()).toBe(finalString);
-		expect(builder.getParams()).toMatch({
+		expect(builder.getParams()).toMatchObject({
 			user,
 			repo
 		});
 
 		// when not using placeholders, 0 index 'em
 		const builder2 = Builder(finalString);
-		expect(builder2.getParams()).toMatch({
+		expect(builder2.getParams()).toMatchObject({
 			0: user,
 			1: repo
 		})
@@ -29,16 +30,13 @@ describe('url builder functions', () => {
 
 	it('should set url query params when array', () => {
 		const url = 'https://github.com';
-		const builder = Builder(url, {
-							multiQuerySeperator: ';'
-						})
-						.setQueryParam({
+		const builder = Builder(url)
+						.setQuery({
 							q: {
 								sep: ';',
 								value: ['first', 'second', 'third'],
 							}
 						})
-						.appendQueryParam('q', 'fourth')
 
 		expect(builder.toString()).toBe(`${url}?q=first;second;third;fourth`);
 	});
@@ -74,11 +72,11 @@ describe('url builder functions', () => {
 		const url = 'https://github.com/ikeohachidi?first=hello+world&second=git%20lab';
 		const builder = Builder(url);
 
-		expect(builder.getQueryParams()).toMatch({
+		expect(builder.getQuery()).toMatchObject({
 			first: 'hello world',
 			second: 'git lab'
 		});
-		expect(builder.getRawQueryParams()).toMatch({
+		expect(builder.getRawQuery()).toMatchObject({
 			first: 'hello+world',
 			second: 'git%20lab'
 		});
@@ -102,18 +100,18 @@ describe.only('standard url builder behaviour', () => {
 	it('should produce proper url parts after setting', () => {
 		const url = 'https://github.com/ikeohachidi/url-builder';
 		const builder = Builder(url)
-						.setScheme('http')
+						.setScheme(Scheme.HTTP)
 						.setHostName('google.com')
 						.setParam(0, 'ikeohachidi')
-						.addQuery({ q: 'vue' });
+						.setQuery('q', 'vue');
 
-		const urlString = builder.toString();
 		expect(builder.getScheme()).toBe('https');
 		expect(builder.getHostName()).toBe('google.com');
 		expect(builder.getParams()).toBe({ 
 			0: 'search',
 			1: 'url-builder'
 		});
+		expect(builder.toString()).toBe('https://google.com/ikeohachidi?q=vue');
 	});
 
 	it('should interpolate param properly', () => {
@@ -135,17 +133,33 @@ describe.only('standard url builder behaviour', () => {
 				params: {
 					repo: 'url-builder'
 				},
+				queries: {},
 				result: `https://github.com/ikeohachidi/url-builder`
 			}
 		];
 
 		for (const obj of urls) {
 			const builder = Builder(obj.url)
-							.setParams(obj.params)
-							.setQuery(obj.queries)
+
+			for (const [key, value] of Object.entries(obj.params)) {
+				builder.setParam(key, value);
+			}
+
+			for (const [key, value] of Object.entries(obj.queries)) {
+				builder.setQuery(key, value);
+			}
 
 			expect(builder.toString()).toBe(obj.result);
 		}
-	})
+	});
+
+	it('should be able to change plaecholder params multiple times', () => {
+		const url = 'https://github.com/{user}';
+		const builder = Builder(url).setParam('user', 'ikeohachidi');
+		expect(builder.toString()).toBe('https://github.com/ikeohachidi');
+
+		builder.setParam('user', 'chidi');
+		expect(builder.toString()).toBe('https://github.com/chidi');
+	});
 
 });
