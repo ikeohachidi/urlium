@@ -39,12 +39,11 @@ export const Builder = (url: string): BType => {
 		const regex = /\{(.*?)\}/;
 		let matches = _url.match(regex);
 		if (matches && matches.length > 0) {
-			const params = {};
+			const params: {[placeholder: string]: Primitive} = {};
 
 			for (let i = 0; i < matches.length; i++) {
 				const param = matches[i];
 				params[param] = i;
-				// params[`{${param}}`] = i;
 			}
 
 			return params;
@@ -53,7 +52,7 @@ export const Builder = (url: string): BType => {
 		// since placehoders don't exist make keys 
 		// indexes of params and values become the 
 		// param itslef.
-		const params = {};
+		const params: {[index: number]: Primitive} = {};
 
 		matches = _noSchemeURL().split('/');
 		for (let i = 0; i < matches.length; i++) {
@@ -92,8 +91,6 @@ export const Builder = (url: string): BType => {
 		queries: urlQuerySections(),
 	}
 
-	// const initialParamSections = urlParamSections();
-
 	return {
 		setParams(obj) {
 			let u = _url;
@@ -109,7 +106,7 @@ export const Builder = (url: string): BType => {
 		setParam(param, value) {
 			if (!value) return this;
 
-			_url = _url.replace(`{${param}}`, value.toString());
+			urlObj.params[param] = value;
 
 			return this;
 		},
@@ -123,7 +120,7 @@ export const Builder = (url: string): BType => {
 
 			return urlObj.params;
 		},
-		setQueryParam(param, value) {
+		setQuery(param, value) {
 			if (!param) return this;
 
 			// when the key, value method of setting the
