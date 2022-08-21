@@ -58,6 +58,6 @@ export interface Builder {
 export type URLObject = {
 	scheme: string;
 	hostname: string;
-	params:	{[param: string]: number};
+	params:	{[param: string]: Primitive};
 	queries: {[queryKey: string]: Primitive};
 }
