@@ -5,76 +5,57 @@ import type {
     StrOrInt,
     URLObject
 } from "./type";
-import { Scheme } from "./type";
 
 const primitives = ['string', 'number', 'boolean'];
 
 // TODO: probably remove Partial just here to ease 
 // development experience
 export const Builder = (url: string): BType => {
-	let _url = '';
+	let _url = url;
 
-	const schemeSlice = url.slice(0, 9);
-	// if no scheme is provided just default
-	// to http
-	if (!schemeSlice.includes(Scheme.HTTP) && !schemeSlice.includes(Scheme.HTTPS)) {
-		_url = `http://'${url}`;
-	} else {
-		_url = url;
-	}
-
-	const _nativeURL = new URL(url);
+	const _nativeURL = new URL(_url);
 
 	const _noSchemeURL = (): string => {
 		return _url
 			.replace('https://', '')
-			.replace('http://', '');
+			.replace('http://', '')
+			.replace('ws://', '');
 	}
 
-	// TODO: may not need a key value pair after all
-	// an array may suffice
 	const urlParamSections = () => {
-		// check for the presense of placeholders
-		// in url and index with them
+		// removing hostname which should be the 1st element
+		const positions = _noSchemeURL().split('/').slice(1);
+		const params: {[index: number]: {
+			value: Primitive,
+			placeholder?: string
+		}} = {};
+
 		const regex = /\{(.*?)\}/;
-		let matches = _url.match(regex);
-		if (matches && matches.length > 0) {
-			const params: {[placeholder: string]: Primitive} = {};
-
-			for (let i = 0; i < matches.length; i++) {
-				const param = matches[i];
-				params[param] = i;
+		for (let i = 0; i < positions.length; i++) {
+			params[i] = {
+				value: positions[i]
 			}
-
-			return params;
-		}
-
-		// since placehoders don't exist make keys 
-		// indexes of params and values become the 
-		// param itslef.
-		const params: {[index: number]: Primitive} = {};
-
-		matches = _noSchemeURL().split('/');
-		for (let i = 0; i < matches.length; i++) {
-			// +1 in order to avoid the hostname which
-			// would be the first element in the array 
-			const param = matches[i + 1];
-			params[i] = param;
+			let match = positions[i].match(regex);
+			if (match && match.length > 0) {
+				params[i].placeholder = match[1];
+			}
 		}
 
 		return params;
 	}
 
 	const urlQuerySections = () => {
-		const fullQueryString = _url.split("?").join("");
-		const queryParts = fullQueryString.split("=");
+		const s = _url.split("?");
+		let fullQueryString: string[] = [];
+		if (s.length > 1) {
+			// index 1 of s since that would have only the queries
+			// on the url
+			fullQueryString = s[1].split("&");
+		}
 		const sections: {[queryKey: string]: Primitive} = {};
 
-		// take two pairs: i and i + 1, since i would be
-		// the query key and i + 1  the value of the query
-		for (let i = 0; i < queryParts.length; i += 2) {
-			const query = queryParts[i];
-			const value = queryParts[i + 1];
+		for (let i = 0; i < fullQueryString.length; i++) {
+			const [query, value] = fullQueryString[i].split('=');
 
 			if (value) {
 				sections[query] = value; 
@@ -85,20 +66,20 @@ export const Builder = (url: string): BType => {
 	}
 
 	const urlObj: URLObject = {
-		scheme: _nativeURL.protocol,
+		// remove colon in protocol, e.g https:
+		scheme: _nativeURL.protocol.slice(0, _nativeURL.protocol.length - 1),
 		hostname: _nativeURL.hostname,
 		params: urlParamSections(),
 		queries: urlQuerySections(),
 	}
 
 	return {
+		rawBuilder() {
+			return urlObj;
+		},
 		setParams(obj) {
-			let u = _url;
-			for (const [key, value] of Object.entries(obj)) {
-				if (value) {
-					u = _url.replace(`{${key}}`, value.toString());
-				}
-				_url = u;
+			for (const [k, v] of Object.entries(obj)) {
+				this.setParam(k, v);
 			}
 
 			return this;
@@ -106,19 +87,52 @@ export const Builder = (url: string): BType => {
 		setParam(param, value) {
 			if (!value) return this;
 
-			urlObj.params[param] = value;
+			// urlObj.params[param] = value;
+			if (typeof param === 'number') {
+				urlObj.params[param].value = value;
+			} else if (typeof param === 'string') {
+				// keeping in mind that key(k) is actually numbers starting from 0
+				// incremeted by 1
+				for (const [k, v] of Object.entries(urlObj.params)) {
+					if (v.placeholder === param) {
+						urlObj.params[Number(k)].value = value;
+					}
+				}
+			}
 
 			return this;
 		},
 		getParams(param?) {
 			if (param) {
 
-				if (urlObj.params.hasOwnProperty(param)) {
-					return urlObj.params[param];
+				if (typeof param === 'number') {
+					return urlObj.params[param].value
+				}
+				// if it's a string then it must have been a placeholder in the url 
+				else if (typeof param === 'string') {
+					for (const v of Object.values(urlObj.params)) {
+						if (v.placeholder === param) {
+							return v.value;
+						}
+					}
+				}
+
+				return null;
+			}
+
+			// build something readable to developer using lib
+			const finalValue: {[key: string | number]: Primitive} = {};
+				
+			for (const [k, v] of Object.entries(urlObj.params)) {
+				if (v.placeholder) {
+					finalValue[v.placeholder] = v.value;
+				} 
+				else {
+					finalValue[k] = v.value;
 				}
 			}
 
-			return urlObj.params;
+			return finalValue;
 		},
 		setQuery(param, value) {
 			if (!param) return this;
@@ -156,7 +170,7 @@ export const Builder = (url: string): BType => {
 			if (param) return urlObj.queries[param];	
 
 			const params: {[query: string]: string} = {};
-			for (const [key, value] of Object.entries(urlObj.params)) {
+			for (const [key, value] of Object.entries(urlObj.queries)) {
 				params[key] = decodeURI(String(value));
 			}
 
@@ -172,31 +186,51 @@ export const Builder = (url: string): BType => {
 			return this;
 		},
 		getHostName() {
-			return _nativeURL.host;
+			return urlObj.hostname;
 		},
 		setScheme(scheme) {
-			urlObj.scheme = scheme;
+			let s = scheme.replaceAll('/', '');
+			s = s.replaceAll(':', '')
+
+			urlObj.scheme = `${s}`;
 			return this;
 		},
 		getScheme() {
-			return _nativeURL.protocol;
+			return urlObj.scheme;
 		},
 		toString() {
-			let u = _url;
 			const { scheme, hostname, params, queries } = urlObj;
-			let str = `${scheme}://${hostname}`;
 
-			// add params to string
-			for (const [key, value] of Object.entries(params)) {
-				if (typeof key === 'string') {
-					str = u.replace(`{${key}}`, String(value));
+			let str = '';
+			if (scheme) {
+				str += `${scheme}://`;
+			}
+			str += hostname;
+
+			// construct param string
+			for (const [k, v] of Object.entries(params)) {
+				if (v.value) {
+					str += `/${v.value}`
+				}
+				else if (v.placeholder) {
+					str += `/{${v.placeholder}}`
+				}
+				else {
+					str += `/${k}`
 				}
 			}
 
 			// add query to string
-			str += "?";
+			let addedQueries = 0;
 			for (const [key, value] of Object.entries(queries)) {
+				if (addedQueries === 0) {
+					str += "?";
+				}
+				else if (addedQueries > 0) {
+					str += '&';
+				}
 				str += `${key}=${value}`;
+				addedQueries++;
 			}
 
 			return str; 

@@ -17,6 +17,7 @@ export enum Scheme {
 
 export interface Builder {
 	// addParam: (param: string) => Builder;
+	rawBuilder: () => URLObject;
 	
 	setParams: (paramObj: {[key: string]: Primitive}) => Builder;
 
@@ -58,6 +59,6 @@ export interface Builder {
 export type URLObject = {
 	scheme: string;
 	hostname: string;
-	params:	{[param: string]: Primitive};
+	params:	{[index: number]: { value: Primitive, placeholder?: string }};
 	queries: {[queryKey: string]: Primitive};
 }

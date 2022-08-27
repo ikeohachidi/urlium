@@ -38,7 +38,7 @@ describe('url builder functions', () => {
 							}
 						})
 
-		expect(builder.toString()).toBe(`${url}?q=first;second;third;fourth`);
+		expect(builder.toString()).toBe(`${url}?q=first;second;third`);
 	});
 
 	// TODO: consider or delete
@@ -73,7 +73,7 @@ describe('url builder functions', () => {
 		const builder = Builder(url);
 
 		expect(builder.getQuery()).toMatchObject({
-			first: 'hello world',
+			first: 'hello+world',
 			second: 'git lab'
 		});
 		expect(builder.getRawQuery()).toMatchObject({
@@ -96,22 +96,24 @@ describe('url builder functions', () => {
 	});
 });
 
-describe.only('standard url builder behaviour', () => {
+describe('standard url builder behaviour', () => {
 	it('should produce proper url parts after setting', () => {
 		const url = 'https://github.com/ikeohachidi/url-builder';
 		const builder = Builder(url)
 						.setScheme(Scheme.HTTP)
 						.setHostName('google.com')
-						.setParam(0, 'ikeohachidi')
+						.setParam(0, 'search')
 						.setQuery('q', 'vue');
 
-		expect(builder.getScheme()).toBe('https');
+					console.log(builder.rawBuilder())
+
+		expect(builder.getScheme()).toBe(Scheme.HTTP);
 		expect(builder.getHostName()).toBe('google.com');
-		expect(builder.getParams()).toBe({ 
+		expect(builder.getParams()).toMatchObject({
 			0: 'search',
 			1: 'url-builder'
 		});
-		expect(builder.toString()).toBe('https://google.com/ikeohachidi?q=vue');
+		expect(builder.toString()).toBe('http://google.com/search/url-builder?q=vue');
 	});
 
 	it('should interpolate param properly', () => {
