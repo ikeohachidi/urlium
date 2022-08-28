@@ -23,8 +23,14 @@ export const Builder = (url: string): BType => {
 	}
 
 	const urlParamSections = () => {
-		// removing hostname which should be the 1st element
-		const positions = _noSchemeURL().split('/').slice(1);
+		// removing half of url that includes queries if any exist
+		// removing hostname which should be the 1st element in resulting array
+		// after "/" split
+		const positions = _noSchemeURL()
+						.split("?")[0]
+						.split('/')
+						.slice(1);
+
 		const params: {[index: number]: {
 			value: Primitive,
 			placeholder?: string
