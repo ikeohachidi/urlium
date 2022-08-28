@@ -105,8 +105,6 @@ describe('standard url builder behaviour', () => {
 						.setParam(0, 'search')
 						.setQuery('q', 'vue');
 
-					console.log(builder.rawBuilder())
-
 		expect(builder.getScheme()).toBe(Scheme.HTTP);
 		expect(builder.getHostName()).toBe('google.com');
 		expect(builder.getParams()).toMatchObject({
