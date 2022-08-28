@@ -10,8 +10,8 @@ const primitives = ['string', 'number', 'boolean'];
 
 // TODO: probably remove Partial just here to ease 
 // development experience
-export const Builder = (url: string): BType => {
-	let _url = url;
+export const Builder = (url?: string): BType => {
+	let _url = url ?? 'http://localhost';
 
 	const _nativeURL = new URL(_url);
 
@@ -81,13 +81,29 @@ export const Builder = (url: string): BType => {
 
 	return {
 		rawBuilder() {
-			return urlObj;
+			return { ...urlObj };
 		},
 		setParams(obj) {
 			for (const [k, v] of Object.entries(obj)) {
 				this.setParam(k, v);
 			}
 
+			return this;
+		},
+		addParam(...params: string[]) {
+			for (const param of params) {
+				const keys = Object.keys(urlObj.params).map(key => Number(key));
+				let newKey = 0;
+				if (keys.length === 0) {
+					newKey = 1;
+				} else {
+					newKey = Math.max(...keys) + 1;
+				}
+
+				urlObj.params[newKey] = {
+					value: param
+				}
+			}
 			return this;
 		},
 		setParam(param, value) {

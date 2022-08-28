@@ -16,9 +16,10 @@ export enum Scheme {
 }
 
 export interface Builder {
-	// addParam: (param: string) => Builder;
 	rawBuilder: () => URLObject;
 	
+	addParam: (...params: string[]) => Builder;
+
 	setParams: (paramObj: {[key: string]: Primitive}) => Builder;
 
 	setParam: (param: string | number, value: Primitive) => Builder;
@@ -49,7 +50,7 @@ export interface Builder {
 
 	getHostName: () => string;
 
-	setScheme: (scheme: Scheme) => Builder;
+	setScheme: (scheme: string) => Builder;
 
 	getScheme: () => void;
 
