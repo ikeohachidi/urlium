@@ -162,4 +162,16 @@ describe('standard url builder behaviour', () => {
 		expect(builder.toString()).toBe('https://github.com/chidi');
 	});
 
+	it('should return url parts', () => {
+		const builder = Builder()
+						.setHostName('github.com')
+						.setScheme('ws')
+						.addParam('ikeohachidi')
+						.addParam('url-builder', 'settings')
+						.setQuery('hello', 'world')
+						.setQuery('name', 'chidi');
+
+		const finalStr = 'ws://github.com/ikeohachidi/url-builder/settings?hello=world&name=chidi';
+		expect(builder.toString()).toBe(finalStr);
+	})
 });
