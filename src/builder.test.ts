@@ -28,6 +28,13 @@ describe('url builder functions', () => {
 		})
 	});
 
+	it('should drop placeholders when not replaced', () => {
+		const url = 'https://github.com/{user}/repo';
+
+		const builder = Builder(url);
+		expect(builder.toString()).toBe('https://github.com/repo');
+	})
+
 	it('should set url query params when array', () => {
 		const url = 'https://github.com';
 		const builder = Builder(url)

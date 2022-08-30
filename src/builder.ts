@@ -8,6 +8,7 @@ import type {
 
 const primitives = ['string', 'number', 'boolean'];
 const schemeRegex = /^.*:\/\//;
+const placeholderRegex = /\{(.*?)\}/;
 const invalidScheme = 'urlbuilder';
 const invalidHostname = '--localhost--';
 
@@ -39,12 +40,11 @@ export const Builder = (url?: string) => {
 			placeholder?: string
 		}} = {};
 
-		const regex = /\{(.*?)\}/;
 		for (let i = 0; i < positions.length; i++) {
 			params[i] = {
 				value: positions[i]
 			}
-			let match = positions[i].match(regex);
+			let match = positions[i].match(placeholderRegex);
 			if (match && match.length > 0) {
 				params[i].placeholder = match[1];
 			}
@@ -238,15 +238,9 @@ export const Builder = (url?: string) => {
 			}
 
 			// construct param string
-			for (const [k, v] of Object.entries(params)) {
-				if (v.value) {
-					str += `/${v.value}`
-				}
-				else if (v.placeholder) {
-					str += `/{${v.placeholder}}`
-				}
-				else {
-					str += `/${k}`
+			for (const v of Object.values(params)) {
+				if (v.value && String(v.value).search(placeholderRegex) === -1) {
+					str += `/${v.value}`;
 				}
 			}
 
