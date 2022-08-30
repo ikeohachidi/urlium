@@ -41,23 +41,6 @@ describe('url builder functions', () => {
 		expect(builder.toString()).toBe(`${url}?q=first;second;third`);
 	});
 
-	// TODO: consider or delete
-	// it('should build more complex query', () => {
-	// 	const url = 'https://github.com';
-	// 	const builder = Builder(url)
-	// 					.setQueryParam({
-	// 						family: {
-	// 							sep: ';',
-	// 							value: 'Roboto:ital,wght'
-	// 						}
-	// 					})
-	// 					.appendQueryParam('family', '@0,100')
-	// 					.appendQueryParam('family', '0,300')
-
-
-	// 	expect(builder.toString()).toBe(`${url}?family=Roboto:ital,wght@0,100,0,300`);
-	// });
-
 	it('should parse schemes from full string', () => {
 		const schemes = ['https', 'ws', 'chrome'];
 		const urls = schemes.map(scheme => `${scheme}://github.com/ikeohachidi/url-builder`);
@@ -190,7 +173,7 @@ describe('standard url builder behaviour', () => {
 		const builder = Builder()
 						.setHostName('github.com')
 						.setQuery('hello', 'world');
-						
+
 		const finalStr = 'github.com?hello=world';
 		expect(builder.toString()).toBe(finalStr);
 	})
