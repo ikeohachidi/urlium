@@ -1,5 +1,5 @@
 import type { 
-	Builder as BType, 
+    ObjectWithPrimitiveValue, 
     Primitive,
     SetQueryParamOptions,
     StrOrInt,
@@ -7,19 +7,22 @@ import type {
 } from "./type";
 
 const primitives = ['string', 'number', 'boolean'];
+const schemeRegex = /^.*:\/\//;
+const invalidScheme = 'urlbuilder';
+const invalidHostname = '--localhost--';
 
 // TODO: probably remove Partial just here to ease 
 // development experience
-export const Builder = (url?: string): BType => {
-	let _url = url ?? 'http://localhost';
+export const Builder = (url?: string) => {
+	// by default use an invalid url so URL class can easily
+	// parse parts, easier to do this than using regex to get
+	// parts of url
+	let _url = url ?? `${invalidScheme}://${invalidHostname}`;
 
 	const _nativeURL = new URL(_url);
 
 	const _noSchemeURL = (): string => {
-		return _url
-			.replace('https://', '')
-			.replace('http://', '')
-			.replace('ws://', '');
+		return _url.replace(schemeRegex, '');
 	}
 
 	const urlParamSections = () => {
@@ -227,10 +230,12 @@ export const Builder = (url?: string): BType => {
 			const { scheme, hostname, params, queries } = urlObj;
 
 			let str = '';
-			if (scheme) {
+			if (scheme && scheme !== invalidScheme) {
 				str += `${scheme}://`;
 			}
-			str += hostname;
+			if (hostname !== invalidHostname) {
+				str += hostname;
+			}
 
 			// construct param string
 			for (const [k, v] of Object.entries(params)) {

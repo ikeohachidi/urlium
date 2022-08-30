@@ -174,4 +174,24 @@ describe('standard url builder behaviour', () => {
 		const finalStr = 'ws://github.com/ikeohachidi/url-builder/settings?hello=world&name=chidi';
 		expect(builder.toString()).toBe(finalStr);
 	})
+
+	it('render out incomplete url without hostname', () => {
+		const builder = Builder()
+						.setScheme('aaa')
+						.addParam('url-builder', 'settings')
+						.setQuery('hello', 'world')
+						.setQuery('name', 'chidi');
+
+		const finalStr = 'aaa:///url-builder/settings?hello=world&name=chidi';
+		expect(builder.toString()).toBe(finalStr);
+	})
+
+	it('renders out incomplete url without scheme', () => {
+		const builder = Builder()
+						.setHostName('github.com')
+						.setQuery('hello', 'world');
+						
+		const finalStr = 'github.com?hello=world';
+		expect(builder.toString()).toBe(finalStr);
+	})
 });
