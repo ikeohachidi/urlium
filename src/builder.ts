@@ -80,17 +80,17 @@ export const Builder = (url?: string): BType => {
 	}
 
 	return {
-		rawBuilder() {
+		toObject(): URLObject {
 			return { ...urlObj };
 		},
-		setParams(obj) {
+		setParams(obj: {[key: string]: Primitive}): typeof this {
 			for (const [k, v] of Object.entries(obj)) {
 				this.setParam(k, v);
 			}
 
 			return this;
 		},
-		addParam(...params: string[]) {
+		addParam(...params: string[]): typeof this {
 			for (const param of params) {
 				const keys = Object.keys(urlObj.params).map(key => Number(key));
 				let newKey = 0;
@@ -106,7 +106,7 @@ export const Builder = (url?: string): BType => {
 			}
 			return this;
 		},
-		setParam(param, value) {
+		setParam(param: string | number, value: Primitive): typeof this  {
 			if (!value) return this;
 
 			// urlObj.params[param] = value;
@@ -124,7 +124,7 @@ export const Builder = (url?: string): BType => {
 
 			return this;
 		},
-		getParams(param?) {
+		getParams(param?: string): Primitive | ObjectWithPrimitiveValue {
 			if (param) {
 
 				if (typeof param === 'number') {
@@ -156,7 +156,10 @@ export const Builder = (url?: string): BType => {
 
 			return finalValue;
 		},
-		setQuery(param, value) {
+		setQuery(
+				param: {[key: string]: SetQueryParamOptions} | StrOrInt,
+				value?: Primitive | object
+		): typeof this  {
 			if (!param) return this;
 
 			// when the key, value method of setting the
@@ -188,7 +191,7 @@ export const Builder = (url?: string): BType => {
 
 			return this;
 		},
-		getQuery(param) {
+		getQuery(param?: string): Primitive | ObjectWithPrimitiveValue {
 			if (param) return urlObj.queries[param];	
 
 			const params: {[query: string]: string} = {};
@@ -198,29 +201,29 @@ export const Builder = (url?: string): BType => {
 
 			return params;
 		},
-		getRawQuery(param) {
+		getRawQuery(param?: string): Primitive | ObjectWithPrimitiveValue {
 			if (param) return urlObj.queries[param];
 
 			return urlObj.queries;
 		},
-		setHostName(hostname: string) {
+		setHostName(hostname: string): typeof this  {
 			urlObj.hostname = hostname;
 			return this;
 		},
 		getHostName() {
 			return urlObj.hostname;
 		},
-		setScheme(scheme) {
+		setScheme(scheme: string): typeof this  {
 			let s = scheme.replaceAll('/', '');
 			s = s.replaceAll(':', '')
 
 			urlObj.scheme = `${s}`;
 			return this;
 		},
-		getScheme() {
+		getScheme(): string {
 			return urlObj.scheme;
 		},
-		toString() {
+		toString(): string {
 			const { scheme, hostname, params, queries } = urlObj;
 
 			let str = '';

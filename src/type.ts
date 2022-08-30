@@ -16,7 +16,7 @@ export enum Scheme {
 }
 
 export interface Builder {
-	rawBuilder: () => URLObject;
+	toObject: () => URLObject;
 	
 	addParam: (...params: string[]) => Builder;
 
