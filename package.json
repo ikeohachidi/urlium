@@ -1,6 +1,26 @@
 {
   "name": "urlium",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ikeohachidi/urlium"
+  },
+  "author": "ikeohachidi",
+  "keywords": [
+    "url"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/urlium.umd.js",
+  "module": "./dist/urlium.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/urlium.es.js",
+      "require": "./dist/urlium.umd.js"
+    },
+    "./dist/": "./dist/"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
