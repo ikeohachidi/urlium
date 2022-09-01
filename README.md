@@ -1,8 +1,8 @@
-## url-object
+## urlium
 Build most standard urls with minimal hassle and minus the string manipulation
 
 ```js
-import { Builder } from 'url-object';
+import { Builder } from 'urlium';
 
 const url = 'https://github.com/{user}/{repo}';
 const user = 'ikeohachidi';
