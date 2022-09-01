@@ -204,6 +204,13 @@ export const Builder = (url?: string) => {
 
 			return params;
 		},
+		removeQuery(param: string): typeof this {
+			if (urlObj.queries.hasOwnProperty(param)) {
+				delete urlObj.queries[param];
+			}
+			
+			return this;
+		},
 		getRawQuery(param?: string): Primitive | ObjectWithPrimitiveValue {
 			if (param) return urlObj.queries[param];
 

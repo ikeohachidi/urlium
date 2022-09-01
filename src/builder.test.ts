@@ -70,7 +70,18 @@ describe('url builder functions', () => {
 			first: 'hello+world',
 			second: 'git%20lab'
 		});
+
+		expect(builder.getQuery('first')).toBe('hello+world');
 	});
+
+	it('should remove the query from the url', () => {
+		const url = 'https://github.com?user=ikeohachidi&repo=builder';
+		const finalUrl = 'https://github.com?repo=builder'
+		const builder = Builder(url)
+						.removeQuery('user')
+
+		expect(builder.toString()).toBe(finalUrl)
+	})
 
 	it('should parse hostname', () => {
 		const hostnames = [

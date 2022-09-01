@@ -34,6 +34,8 @@ export interface Builder {
 		value?: Primitive | object
 	) => Builder;
 
+	removeQuery: (param: string) => Builder;
+
 	// addQueryParam: (param: string | number, value: Primitive) => Builder;
 
 	getQuery: (param?: string) => Either<
