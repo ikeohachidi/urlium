@@ -1,6 +1,18 @@
 ## urlium
 Build most standard urls with minimal hassle and minus the string manipulation
 
+### Installation
+```js
+// npm
+npm install urlium
+
+// pnpm
+pnpm add urlium
+
+// yarn
+yarn add urlium
+```
+
 ```js
 import { Builder } from 'urlium';
 
